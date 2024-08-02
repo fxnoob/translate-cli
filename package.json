@@ -1,0 +1,34 @@
+{
+  "name": "@fxnoob/translate",
+  "version": "0.0.1",
+  "main": "index.js",
+  "license": "MIT",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint — fix",
+      "prettier — write",
+      "git add"
+    ]
+  },
+  "bin": {
+    "translate": "./index.js"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "husky": "^9.0.11",
+    "prettier": "^3.3.3"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^5.3.6",
+    "commander": "^12.0.0",
+    "inquirer": "^10.1.6",
+    "jsonfile": "^6.1.0",
+    "node-google-translate-skidz": "^1.1.2",
+    "yup": "^1.4.0"
+  }
+}

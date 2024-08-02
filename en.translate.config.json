@@ -1,0 +1,22 @@
+{
+  "appDesc": {
+    "message": "Convert your JSON file to over 40 different languages.",
+    "description": "App's primary description"
+  },
+  "initCmdDesc": {
+    "message": "Create a configuration file with default values.",
+    "description": "description for init command"
+  },
+  "syncCmdDesc": {
+    "message": "Sync locales with default locale values.",
+    "description": "description for sync command"
+  },
+  "configFileExists": {
+    "message": "config file translate.config.json already exists!",
+    "description": "error message"
+  },
+  "configFileDoesNotExist": {
+    "message": "config file translate.config.json does not exist!",
+    "description": "error message"
+  }
+}
