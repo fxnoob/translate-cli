@@ -6,7 +6,7 @@ const { IntlUtil } = require('./src/intl');
 
 const intl = new IntlUtil();
 
-program.version('0.0.1').description(intl.t('appDesc'));
+program.version('0.0.3').description(intl.t('appDesc'));
 
 program
   .command('init')
