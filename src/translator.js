@@ -375,13 +375,33 @@ class Translator {
 
   async sync() {
     const configPath = this.options.configFilePath;
+    if (!fs.existsSync(configPath)) {
+      console.log('translate.config.json file does not exist.');
+      return;
+    }
     const config = jsonfile.readFileSync(configPath);
-    const defaultLocale = config.defaultLocale;
+    if (!fs.existsSync(config.defaultLocaleFilePth)) {
+      console.log(
+        `${config.defaultLocale}.translate.config.json file does not exist.`
+      );
+      return;
+    }
     const defaultLocaleJson = jsonfile.readFileSync(
       config.defaultLocaleFilePth
     );
+    try {
+      await this.validator.validateLocaleContent(defaultLocaleJson);
+    } catch (e) {
+      console.log(`Invalid ${config.defaultLocale}.translate.config.json file`);
+      return;
+    }
+    // empty object check
+    if (Object.values(defaultLocaleJson).length === 0) {
+      return;
+    }
+    const defaultLocale = config.defaultLocale;
     const newKeys = Object.keys(defaultLocaleJson);
-    const targetDirRoot =  `${config.buildDir}/_locales`;
+    const targetDirRoot = `${config.buildDir}/_locales`;
     const locales = this.defaultConfig.languages;
     for (let i = 0; i < locales.length; i++) {
       const locale = locales[i];
@@ -393,16 +413,22 @@ class Translator {
       for (let j = 0; j < newKeys.length; j++) {
         const newKey = newKeys[j];
         if (!oldJsonFile[newKey]) {
-          const message = defaultLocaleJson[newKey].message;
+          const message =
+            typeof defaultLocaleJson[newKey] === 'string'
+              ? defaultLocaleJson[newKey]
+              : defaultLocaleJson[newKey].message;
           const { translation } = await helper.translate(
             defaultLocale,
             locale,
             message
           );
-          oldJsonFile[newKey] = {
-            message: translation,
-            description: defaultLocaleJson[newKey].description,
-          };
+          oldJsonFile[newKey] =
+            typeof defaultLocaleJson[newKey] === 'string'
+              ? translation
+              : {
+                  message: translation,
+                  description: defaultLocaleJson[newKey].description,
+                };
           console.log('updating key ->', newKey, '  ->  ', oldJsonFile[newKey]);
         }
       }

@@ -32,7 +32,7 @@ class IntlUtil {
     if (!this.translations[this.locale]) {
       this.loadTranslations();
     }
-    return this.translations[this.locale][key]?.message || '';
+    return this.translations[this.locale][key] || '';
   }
 }
 
