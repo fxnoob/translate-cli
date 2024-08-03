@@ -1,5 +1,6 @@
 {
   "name": "@fxnoob/translate",
+  "description": "command-line interface for initializing and synchronizing translation configurations in your project.",
   "version": "0.0.4",
   "main": "index.js",
   "license": "MIT",
@@ -34,5 +35,7 @@
     "jsonfile": "^6.1.0",
     "node-google-translate-skidz": "^1.1.2",
     "yup": "^1.4.0"
-  }
+  },
+  "repository": "fxnoob/translate-cli",
+  "author": "Hitesh Saini"
 }

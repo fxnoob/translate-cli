@@ -3,10 +3,11 @@ const fs = require('fs');
 const { program } = require('commander');
 const { Translator } = require('./src/translator');
 const { IntlUtil } = require('./src/intl');
+const pkg = require('./package.json');
 
 const intl = new IntlUtil();
 
-program.version('0.0.3').description(intl.t('appDesc'));
+program.version(pkg.version).description(intl.t('appDesc'));
 
 program
   .command('init')
