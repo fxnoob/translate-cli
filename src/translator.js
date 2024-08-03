@@ -432,7 +432,16 @@ class Translator {
           console.log('updating key ->', newKey, '  ->  ', oldJsonFile[newKey]);
         }
       }
+      await this.clearObsoleteTranslations(defaultLocaleJson, oldJsonFile, locale);
       jsonfile.writeFileSync(oldJsonFilePath, oldJsonFile, { flag: 'w' });
+    }
+  }
+  async clearObsoleteTranslations(currentLocaleJson, targetLocaleJson, locale) {
+    for (const key in targetLocaleJson) {
+      if (!currentLocaleJson.hasOwnProperty(key)) {
+        console.log(`Erasing obsolete key: ${key}, from locale: ${locale}`);
+        delete targetLocaleJson[key];
+      }
     }
   }
 }
