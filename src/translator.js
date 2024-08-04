@@ -372,7 +372,26 @@ class Translator {
       await helper.createFileWithDirs(p);
     }
   }
-
+  async createMapFile(defaultJson, targetJson, targetLocaleMapPath) {
+    let targetLocaleMapJson = {};
+    for (const key in targetJson) {
+      const currentMessage =
+        typeof targetJson[key] === 'string'
+          ? targetJson[key]
+          : targetJson[key]?.message;
+      const origMessage =
+        typeof defaultJson[key] === 'string'
+          ? defaultJson[key]
+          : defaultJson[key]?.message;
+      targetLocaleMapJson[key] = {
+        origMessage: origMessage,
+        currentMessage: currentMessage,
+      };
+    }
+    fs.writeFileSync(targetLocaleMapPath, JSON.stringify(targetLocaleMapJson), {
+      flag: 'w',
+    });
+  }
   async sync() {
     const configPath = this.options.configFilePath;
     if (!fs.existsSync(configPath)) {
@@ -409,14 +428,26 @@ class Translator {
         targetDirRoot,
         `/${locale}/messages.json`
       );
-      const oldJsonFile = jsonfile.readFileSync(oldJsonFilePath);
+      const oldJsonFileMapPath = path.join(
+        targetDirRoot,
+        `/${locale}/messages.map.json`
+      );
+      const oldJsonFile = fs.existsSync(oldJsonFilePath)
+        ? jsonfile.readFileSync(oldJsonFilePath)
+        : {};
+      const oldJsonMapFile = fs.existsSync(oldJsonFileMapPath)
+        ? jsonfile.readFileSync(oldJsonFileMapPath)
+        : {};
       for (let j = 0; j < newKeys.length; j++) {
         const newKey = newKeys[j];
-        if (!oldJsonFile[newKey]) {
-          const message =
-            typeof defaultLocaleJson[newKey] === 'string'
-              ? defaultLocaleJson[newKey]
-              : defaultLocaleJson[newKey].message;
+        const message =
+          typeof defaultLocaleJson[newKey] === 'string'
+            ? defaultLocaleJson[newKey]
+            : defaultLocaleJson[newKey].message;
+        if (
+          !oldJsonFile[newKey] ||
+          oldJsonMapFile[newKey]?.origMessage !== message
+        ) {
           const { translation } = await helper.translate(
             defaultLocale,
             locale,
@@ -432,9 +463,20 @@ class Translator {
           console.log('updating key ->', newKey, '  ->  ', oldJsonFile[newKey]);
         }
       }
-      await this.clearObsoleteTranslations(defaultLocaleJson, oldJsonFile, locale);
+      await this.clearObsoleteTranslations(
+        defaultLocaleJson,
+        oldJsonFile,
+        locale
+      );
       jsonfile.writeFileSync(oldJsonFilePath, oldJsonFile, { flag: 'w' });
+      await this.createMapFile(
+        defaultLocaleJson,
+        oldJsonFile,
+        `${config.buildDir}/_locales/${locale}/messages.map.json`
+      );
     }
+    console.log('Synchronization has been completed.\n');
+    // end of sync
   }
   async clearObsoleteTranslations(currentLocaleJson, targetLocaleJson, locale) {
     for (const key in targetLocaleJson) {
