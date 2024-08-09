@@ -1,15 +1,17 @@
-#!/usr/bin/env node
 const fs = require('fs');
-const { program } = require('commander');
+const { Command } = require('commander');
 const { Translator } = require('./src/translator');
 const { IntlUtil } = require('./src/intl');
 const pkg = require('./package.json');
 
 const intl = new IntlUtil();
 
-program.version(pkg.version).description(intl.t('appDesc'));
+const subProgram = new Command('translate')
 
-program
+
+subProgram.version(pkg.version).description(intl.t('appDesc'));
+
+subProgram
   .command('init')
   .description(intl.t('initCmdDesc'))
   .action(async (options) => {
@@ -26,7 +28,7 @@ program
     }
   });
 
-program
+subProgram
   .command('sync')
   .description(intl.t('syncCmdDesc'))
   .action(async (options) => {
@@ -44,4 +46,4 @@ program
     }
   });
 
-program.parse(process.argv);
+module.exports = subProgram;

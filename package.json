@@ -20,7 +20,7 @@
     ]
   },
   "bin": {
-    "translate": "./index.js"
+    "translate": "cmd.js"
   },
   "devDependencies": {
     "bumpp": "^9.4.2",
