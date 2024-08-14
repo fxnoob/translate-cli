@@ -1,9 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const jsonfile = require('jsonfile');
-const { select, Separator } = require('@inquirer/prompts');
-const inquirer = require('inquirer').default;
-const translateNG = require('node-google-translate-skidz');
+const GoogleTranslate = require('@vitalets/google-translate-api');
 
 async function initializeConfigFile(props) {
   jsonfile.writeFileSync(props.filePath, props.jsonData, { flag: 'w' });
@@ -34,23 +32,13 @@ async function createFileWithDirs(filePath, jsonData = {}) {
     console.log(`${filePath} already exists`);
   }
 }
-async function translate(sourceEn, targetEn, text) {
-  return new Promise((resolve, reject) => {
-    try {
-      translateNG(
-        {
-          text: text,
-          source: sourceEn,
-          target: targetEn,
-        },
-        (res) => {
-          resolve(res);
-        }
-      );
-    } catch (e) {
-      reject(e);
-    }
+
+async function translate(sourceEn, targetEn, sourceText) {
+  const { text } = await GoogleTranslate.translate(sourceText, {
+    to: targetEn,
+    from: sourceEn,
   });
+  return text;
 }
 
 function getSystemLocale() {
