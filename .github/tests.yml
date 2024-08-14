@@ -3,6 +3,9 @@ name: Run Tests on PR to master
 on:
   pull_request:
     branches:
+      - '**'
+  push:
+    branches:
       - master
 
 jobs:
