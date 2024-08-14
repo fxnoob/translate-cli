@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 const subProgram = require('./index');
+const pkg = require('./package.json')
 
 // Mock the console.log to test outputs
 console.log = jest.fn();
@@ -25,7 +26,7 @@ describe('translate CLI', () => {
 
   it('should display the version and description', () => {
     const output = runCLI('--version');
-    expect(output).toContain(subProgram._version);
+    expect(output).toContain(pkg.version);
 
     const helpOutput = runCLI('--help');
     expect(helpOutput).toContain(subProgram._description);
