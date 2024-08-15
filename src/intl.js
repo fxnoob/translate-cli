@@ -1,5 +1,6 @@
 const path = require('path');
 const jsonfile = require('jsonfile');
+const helper = require('./helper');
 
 class IntlUtil {
   constructor() {
@@ -16,7 +17,7 @@ class IntlUtil {
       ? envLocale
       : new Intl.DateTimeFormat().resolvedOptions().locale;
     envLocale = envLocale.split('-')[0];
-    if (!envLocale) {
+    if (!helper.locales.includes(envLocale)) {
       envLocale = 'en';
     }
     return envLocale;
