@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const { select } = require('@inquirer/prompts');
-const inquirer = require('inquirer').default;
+const prompts = require('@inquirer/prompts');
+const inquirer = require('inquirer');
 const jsonfile = require('jsonfile');
 
 const { Validator } = require('./validator');
@@ -13,57 +13,7 @@ class Translator {
     this.validator = new Validator();
     this.defaultConfig = {
       defaultLang: 'en',
-      languages: [
-        'ar',
-        'am',
-        'bg',
-        'bn',
-        'ca',
-        'cs',
-        'da',
-        'de',
-        'el',
-        'en',
-        'es',
-        'et',
-        'fa',
-        'fi',
-        'fil',
-        'fr',
-        'gu',
-        'he',
-        'hi',
-        'hr',
-        'hu',
-        'id',
-        'it',
-        'ja',
-        'kn',
-        'ko',
-        'lt',
-        'lv',
-        'ml',
-        'mr',
-        'ms',
-        'nl',
-        'no',
-        'pl',
-        'pt',
-        'ro',
-        'ru',
-        'sk',
-        'sl',
-        'sr',
-        'sv',
-        'sw',
-        'ta',
-        'te',
-        'th',
-        'tr',
-        'uk',
-        'vi',
-        'zh',
-      ],
+      languages: helper.locales,
       buildDir: null,
     };
   }
@@ -77,7 +27,7 @@ class Translator {
       return true;
     };
     const questions = [];
-    const defaultLocale = await select({
+    const defaultLocale = await prompts.select({
       message: 'Select your default language',
       choices: [
         {

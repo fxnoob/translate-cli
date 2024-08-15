@@ -1,7 +1,19 @@
 {
-  "extends": ["eslint:recommended"],
-  "parserOptions": {
-    "ecmaVersion": 2021
+  "extends": [
+    "eslint:recommended",
+    "plugin:jest/recommended"
+  ],
+  "env": {
+    "node": true,      // Recognize Node.js global variables
+    "es2021": true,    // Enable ES2021 syntax and global variables
+    "jest/globals": true // Recognize Jest global variables
   },
-  "rules": {}
+  "plugins": ["jest"],
+  "parserOptions": {
+    "ecmaVersion": 2021,
+    "sourceType": "module"
+  },
+  "rules": {
+    // Customize your rules here
+  }
 }
