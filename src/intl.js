@@ -16,6 +16,9 @@ class IntlUtil {
       ? envLocale
       : new Intl.DateTimeFormat().resolvedOptions().locale;
     envLocale = envLocale.split('-')[0];
+    if (!envLocale) {
+      envLocale = 'en';
+    }
     return envLocale;
   }
   setLocale(locale) {
@@ -32,7 +35,10 @@ class IntlUtil {
     if (!this.translations[this.locale]) {
       this.loadTranslations();
     }
-    return this.translations[this.locale][key] || '';
+    if (this.translations && this.translations[this.locale]) {
+      return this.translations[this.locale][key] || '';
+    }
+    return '';
   }
 }
 
