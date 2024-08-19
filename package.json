@@ -1,7 +1,7 @@
 {
   "name": "@fxnoob/translate",
   "description": "command-line interface for initializing and synchronizing translation configurations in your project.",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "main": "index.js",
   "license": "MIT",
   "husky": {
