@@ -16,6 +16,7 @@ jest.mock('inquirer', () => ({
 jest.mock('@inquirer/prompts', () => ({
   select: jest.fn(),
 }));
+console.log = jest.fn();
 
 // Utility function to run CLI commands
 const runCLI = (args) => {
@@ -49,6 +50,18 @@ describe('translate CLI', () => {
     expect(helpOutput).toContain(subProgram._description);
   });
 
+  it('translate init double time throw error that file already exists', async () => {
+    const locale = 'hi';
+    const buildDir = '.';
+    prompts.select.mockResolvedValue(locale);
+    inquirer.prompt.mockResolvedValue({ install: true, buildDir });
+    await subProgram.parseAsync(['node', 'test', 'init']); // Simulating 'translate init' command
+    await subProgram.parseAsync(['node', 'test', 'init']); // Simulating 'translate init' command
+    expect(console.log).toHaveBeenCalledWith(
+      `config file translate.config.json already exists!`
+    );
+  });
+
   it('should initialize a new translator when config file does not exist', async () => {
     const locale = 'hi';
     const buildDir = '.';
@@ -70,7 +83,6 @@ describe('translate CLI', () => {
   });
 
   it('should sync translation if config file exists', async () => {
-
     const locale = 'en';
     const buildDir = '.';
     prompts.select.mockResolvedValue(locale);
@@ -87,7 +99,7 @@ describe('translate CLI', () => {
       { flag: 'w' }
     );
     await subProgram.parseAsync(['node', 'test', 'sync']); // Simulating 'translate sync' command
-     const generatedTranslateConfig = jsonfile.readFileSync(
+    const generatedTranslateConfig = jsonfile.readFileSync(
       path.join(process.cwd(), 'translate.config.json')
     );
     console.log(
@@ -101,9 +113,10 @@ describe('translate CLI', () => {
     });
   });
 
-
-  // it('should handle invalid commands gracefully', () => {
-  //   const output = runCLI('invalidcommand');
-  //   expect(output).toContain('error: unknown command');
-  // });
+  it('should not init if translate.config.json file does not exist', async () => {
+    await subProgram.parseAsync(['node', 'test', 'sync']); // Simulating 'translate sync' command
+    expect(console.log).toHaveBeenCalledWith(
+      `config file translate.config.json does not exist!`
+    );
+  });
 });
