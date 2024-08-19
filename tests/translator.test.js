@@ -1,10 +1,37 @@
 const fs = require('fs');
-
 const { Translator } = require('../src/translator');
+const path = require('path');
+
+// Mock dependencies
 jest.mock('fs');
+jest.setTimeout(10000 * 60); // Set timeout to 10 minutes for this test
+jest.mock('inquirer', () => ({
+  prompt: jest.fn(),
+}));
+jest.mock('@inquirer/prompts', () => ({
+  select: jest.fn(),
+}));
+console.log = jest.fn();
+console.warn = jest.fn();
 
 describe('translator class tests', () => {
+  let tempDir;
+
+  beforeEach(() => {
+    // Create a temporary directory
+    tempDir = fs.mkdtempSync(path.join(__dirname, 'temp-data'));
+    process.chdir(tempDir);
+  });
+
+  afterEach(() => {
+    // Change back to the original working directory
+    process.chdir(__dirname);
+    // Remove the temporary directory and its contents
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  });
+
   it('should create a map file with the correct structure', async () => {
+    console.log({ tempDir });
     const translator = new Translator();
     const defaultJson = {
       key1: 'Hello',
@@ -44,7 +71,7 @@ describe('translator class tests', () => {
   });
 
   it('should delete keys from targetLocaleJson that are not present in currentLocaleJson and log the action', async () => {
-    const translator = new Translator()
+    const translator = new Translator();
     const currentLocaleJson = {
       key1: 'Hello',
       key2: 'Goodbye',

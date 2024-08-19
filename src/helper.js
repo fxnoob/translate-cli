@@ -59,15 +59,6 @@ async function initializeConfigFile(props) {
   jsonfile.writeFileSync(props.filePath, props.jsonData, { flag: 'w' });
 }
 
-async function ensureDirectoryExists(filePath) {
-  const dirname = path.dirname(filePath);
-  try {
-    await fs.mkdir(dirname, { recursive: true });
-  } catch (err) {
-    console.error(`Error creating directory: ${err}`);
-  }
-}
-
 async function createFileWithDirs(filePath, jsonData = {}) {
   // Check if the file exists
   if (!fs.existsSync(filePath)) {
@@ -85,39 +76,41 @@ async function createFileWithDirs(filePath, jsonData = {}) {
   }
 }
 
-async function translate(sourceEn, targetEn, text) {
-  return new Promise((resolve, reject) => {
-    try {
+async function translate(sourceLanguage, targetLanguage, text) {
+  try {
+    const translationResult = await new Promise((resolve, reject) => {
       translateNG(
         {
-          text: text,
-          source: sourceEn,
-          target: targetEn,
+          text,
+          source: sourceLanguage,
+          target: targetLanguage,
         },
-        (res) => {
-          resolve(res);
+        (response) => {
+          if (response && response.translation) {
+            return resolve(response.translation);
+          } else {
+            return reject(
+              new Error('Translation service returned an invalid response.')
+            );
+          }
         }
       );
-    } catch (e) {
-      reject(e);
-    }
-  });
+    });
+    return translationResult;
+  } catch (error) {
+    throw new Error(`Failed to translate text: ${error.message}`);
+  }
 }
-
-function getSystemLocale() {
-  const envLocale =
-    process.env.LC_ALL ||
-    process.env.LC_MESSAGES ||
-    process.env.LANG ||
-    process.env.LANGUAGE;
-  return envLocale
-    ? envLocale
-    : new Intl.DateTimeFormat().resolvedOptions().locale;
-}
+const validateInput = (propName) => (value) => {
+  if (!value || value === '') return `${propName} can't be Empty!`;
+  if (propName === 'buildDir' && !fs.existsSync(value)) {
+    return `The directory you provided does not exist. Please provide a different directory name.`;
+  }
+  return true;
+};
 
 exports.createFileWithDirs = createFileWithDirs;
-exports.ensureDirectoryExists = ensureDirectoryExists;
 exports.initializeConfigFile = initializeConfigFile;
 exports.translate = translate;
-exports.getSystemLocale = getSystemLocale;
 exports.locales = locales;
+exports.validateInput = validateInput;

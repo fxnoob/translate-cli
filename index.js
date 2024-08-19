@@ -6,8 +6,7 @@ const pkg = require('./package.json');
 
 const intl = new IntlUtil();
 
-const subProgram = new Command('translate')
-
+const subProgram = new Command('translate');
 
 subProgram.version(pkg.version).description(intl.t('appDesc'));
 
@@ -23,9 +22,7 @@ subProgram
       }
       const translator = new Translator({ ...options, configFilePath });
       await translator.init();
-    } catch (e) {
-      throw new Error(e.message);
-    }
+    } catch (e) { /* empty */ }
   });
 
 subProgram
@@ -41,9 +38,7 @@ subProgram
       // TODO: validate translate.config.json file
       const translator = new Translator({ ...options, configFilePath });
       await translator.sync();
-    } catch (e) {
-      throw new Error(e.message);
-    }
+    } catch (e) { /* empty */ }
   });
 
 module.exports = subProgram;

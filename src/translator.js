@@ -19,13 +19,7 @@ class Translator {
   }
 
   async init() {
-    const validateInput = (propName) => (value) => {
-      if (value === '') return `${propName} can't be Empty!`;
-      if (propName === 'buildDir' && !fs.existsSync(value)) {
-        return `The directory you provided does not exist. Please provide a different directory name.`;
-      }
-      return true;
-    };
+    const validateInput = helper.validateInput;
     const questions = [];
     const defaultLocale = await prompts.select({
       message: 'Select your default language',
@@ -398,7 +392,7 @@ class Translator {
           !oldJsonFile[newKey] ||
           oldJsonMapFile[newKey]?.origMessage !== message
         ) {
-          const { translation } = await helper.translate(
+          const translation = await helper.translate(
             defaultLocale,
             locale,
             message

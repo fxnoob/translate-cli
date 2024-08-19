@@ -8,7 +8,6 @@ jest.mock('jsonfile', () => ({
 describe('Intl class Tests', () => {
   test('should get system locale', async () => {
     const intl = new IntlUtil();
-    // setting process.env.LANG to hi
     process.env.LANG = 'hi';
     expect(intl.getSystemLocale()).toBe('hi');
     // setting process.env.LANG to unrecognised locale
@@ -28,5 +27,21 @@ describe('Intl class Tests', () => {
       appName: 'test',
     };
     expect(intl.t('appName')).toBe('test');
+  });
+
+  test('intl should set locale', async () => {
+    const intl = new IntlUtil();
+    const locale = 'en';
+    intl.setLocale(locale);
+    expect(intl.locale).toBe(locale);
+  });
+
+  test('intl should return empty translation string if no translation is found for a given key', async () => {
+    const intl = new IntlUtil();
+    intl.setLocale('en')
+    intl.translations['es'] = {
+      appName: 'test',
+    };
+    expect(intl.t('appName')).toBe('');
   });
 });

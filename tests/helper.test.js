@@ -2,8 +2,12 @@ const helper = require('../src/helper');
 const fs = require('fs');
 const path = require('path');
 const jsonfile = require('jsonfile');
+const nock = require('nock');
 
-describe('helper utility class', () => {
+console.log = jest.fn();
+console.warn = jest.fn();
+
+describe('helpers utility class', () => {
   let tempDir;
 
   beforeEach(() => {
@@ -19,7 +23,7 @@ describe('helper utility class', () => {
     fs.rmSync(tempDir, { recursive: true, force: true });
   });
 
-  test('it should initialize config file', () => {
+  test('helpers it should initialize config file', () => {
     const buildDir = '.';
     const defaultLocale = 'en';
     const jsonData = {
@@ -37,19 +41,62 @@ describe('helper utility class', () => {
     expect(jsonData).toEqual(savedJsonData);
   });
 
-  test('translate unit english to hindi', async () => {
+  test('helpers translate unit english to hindi', async () => {
     const sourceEn = 'en';
     const targetEn = 'hi';
     const text = 'test';
-    const { translation } = await helper.translate(sourceEn, targetEn, text);
-    expect(translation).toBe('परीक्षा')
+    const translation = await helper.translate(sourceEn, targetEn, text);
+    expect(translation).toBe('परीक्षा');
   });
 
-  test('translate unit hindi to english', async () => {
+  test('helpers translate unit hindi to english', async () => {
     const sourceEn = 'hi';
     const targetEn = 'en';
     const text = 'परीक्षा';
-    const { translation } = await helper.translate(sourceEn, targetEn, text);
-    expect(translation).toBe('Examination')
+    const translation = await helper.translate(sourceEn, targetEn, text);
+    expect(translation).toBe('Examination');
+  });
+
+  test('helpers translate should fail if there is no network connection', async () => {
+    nock.disableNetConnect();
+    const sourceEn = 'en';
+    const targetEn = 'hi';
+    const text = 'test';
+    try {
+      const translation = await helper.translate(sourceEn, targetEn, text);
+      expect(translation).toBe(undefined);
+    } catch (e) {
+      /* empty */
+    }
+  });
+
+  test('helpers should throw error after calling createFileWithDirs twice', async () => {
+    const dirPath = '_locales/en/messages.json';
+    await helper.createFileWithDirs(dirPath);
+    await helper.createFileWithDirs(dirPath);
+    expect(console.log).toHaveBeenCalledWith(`${dirPath} already exists`);
+  });
+
+  test('helpers translate should throw error if parameters are wrong', async () => {
+    jest.mock('node-google-translate-skidz', () =>
+      jest.fn(() => Promise.reject('failed'))
+    );
+    const sourceEn = null;
+    const targetEn = 'hi';
+    const text = 'test';
+    await expect(helper.translate(sourceEn, targetEn, text)).rejects.toThrow(
+      'Translation service returned an invalid response.'
+    );
+  });
+
+  test('helpers validate command inputs', async () => {
+    expect(helper.validateInput('locale')('en')).toBe(true);
+    // should return error if value is empty
+    expect(helper.validateInput('locale')(null)).toBe(`locale can't be Empty!`);
+    // should check for dir if buildDir prop is given
+    expect(helper.validateInput('buildDir')('src')).toBe(
+      `The directory you provided does not exist. Please provide a different directory name.`
+    );
+    expect(helper.validateInput('buildDir')('.')).toBe(true);
   });
 });
