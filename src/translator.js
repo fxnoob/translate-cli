@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const prompts = require('@inquirer/prompts');
-const inquirer = require('inquirer');
+const inquirer = require('inquirer').default;
 const jsonfile = require('jsonfile');
 
 const { Validator } = require('./validator');
@@ -295,6 +295,7 @@ class Translator {
       message: 'do you really want to initialize?',
     });
     const answers = await inquirer.prompt(questions);
+
     if (!answers.install) {
       return;
     }

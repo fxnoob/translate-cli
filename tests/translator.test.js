@@ -9,6 +9,9 @@ const subProgram = require('../index');
 // Mock dependencies
 jest.setTimeout(10000 * 60); // Set timeout to 10 minutes for this test
 jest.mock('inquirer', () => ({
+  default: {
+    prompt: jest.fn()
+  },
   prompt: jest.fn(),
 }));
 jest.mock('@inquirer/prompts', () => ({

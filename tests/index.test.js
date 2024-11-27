@@ -11,6 +11,9 @@ const prompts = require('@inquirer/prompts');
 jest.setTimeout(10000 * 60); // Set timeout to 10 minutes for this test
 // Mock dependencies
 jest.mock('inquirer', () => ({
+  default: {
+    prompt: jest.fn(),
+  },
   prompt: jest.fn(),
 }));
 jest.mock('@inquirer/prompts', () => ({
@@ -54,7 +57,7 @@ describe('translate CLI', () => {
     const locale = 'hi';
     const buildDir = '.';
     prompts.select.mockResolvedValue(locale);
-    inquirer.prompt.mockResolvedValue({ install: true, buildDir });
+    inquirer.default.prompt.mockResolvedValue({ install: true, buildDir });
     await subProgram.parseAsync(['node', 'test', 'init']); // Simulating 'translate init' command
     await subProgram.parseAsync(['node', 'test', 'init']); // Simulating 'translate init' command
     expect(console.log).toHaveBeenCalledWith(
