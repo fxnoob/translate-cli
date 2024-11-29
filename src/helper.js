@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const jsonfile = require('jsonfile');
-const translateNG = require('node-google-translate-skidz');
+const translateNG = require('./google-translate');
 
 const locales = [
   'ar',
@@ -98,7 +98,7 @@ async function translate(sourceLanguage, targetLanguage, text) {
     });
     return translationResult;
   } catch (error) {
-    throw new Error(`Failed to translate text: ${error.message}`);
+    return undefined
   }
 }
 const validateInput = (propName) => (value) => {

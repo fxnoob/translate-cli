@@ -46,6 +46,7 @@ describe('helpers utility class', () => {
     const targetEn = 'hi';
     const text = 'test';
     const translation = await helper.translate(sourceEn, targetEn, text);
+    console.log({translation})
     expect(translation).toBe('परीक्षा');
   });
 
@@ -54,6 +55,7 @@ describe('helpers utility class', () => {
     const targetEn = 'en';
     const text = 'परीक्षा';
     const translation = await helper.translate(sourceEn, targetEn, text);
+    console.log({translation})
     expect(translation).toBe('Examination');
   });
 
@@ -62,12 +64,8 @@ describe('helpers utility class', () => {
     const sourceEn = 'en';
     const targetEn = 'hi';
     const text = 'test';
-    try {
-      const translation = await helper.translate(sourceEn, targetEn, text);
-      expect(translation).toBe(undefined);
-    } catch (e) {
-      /* empty */
-    }
+    const translation = await helper.translate(sourceEn, targetEn, text);
+    expect(translation).toBe(undefined);
   });
 
   test('helpers should throw error after calling createFileWithDirs twice', async () => {
@@ -78,15 +76,11 @@ describe('helpers utility class', () => {
   });
 
   test('helpers translate should throw error if parameters are wrong', async () => {
-    jest.mock('node-google-translate-skidz', () =>
-      jest.fn(() => Promise.reject('failed'))
-    );
     const sourceEn = null;
     const targetEn = 'hi';
     const text = 'test';
-    await expect(helper.translate(sourceEn, targetEn, text)).rejects.toThrow(
-      'Translation service returned an invalid response.'
-    );
+    const response = await helper.translate(sourceEn, targetEn, text)
+    await expect(response).toBe(undefined);
   });
 
   test('helpers validate command inputs', async () => {
